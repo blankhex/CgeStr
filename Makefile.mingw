@@ -1,0 +1,23 @@
+# MinGW Makefile for CgeStr
+
+CC = gcc
+AR = ar
+CFLAGS = -std=c99 -O2 -Wall -Wextra
+ARFLAGS = rcs
+TARGET = libCgeStr.a
+
+SOURCES = Rune.c Str.c UCD.c Utf8.c Utf16.c
+OBJECTS = $(SOURCES:.c=.o)
+
+.PHONY: all clean
+
+all: $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(AR) $(ARFLAGS) $@ $^
+
+%.o: %.c CgeStr.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+clean:
+	del $(OBJECTS) $(TARGET) 2>nul || exit 0

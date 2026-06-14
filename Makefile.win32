@@ -1,0 +1,23 @@
+# Makefile.win32 for MSVC (NMake)
+# Usage: Open "x86 Native Tools Command Prompt", then:
+#   nmake -f Makefile.win32
+
+CC = cl
+LIB = lib
+CFLAGS = /c /nologo /W3 /O2
+LIBFLAGS = /nologo
+TARGET = CgeStr.lib
+
+SOURCES = Rune.c Str.c UCD.c Utf8.c Utf16.c
+OBJECTS = $(SOURCES:.c=.obj)
+
+$(TARGET): $(OBJECTS)
+	$(LIB) $(LIBFLAGS) /OUT:$(TARGET) $(OBJECTS)
+
+{.}.c{}.obj:
+	$(CC) $(CFLAGS) /Fo$@ $<
+
+clean:
+	del $(OBJECTS) $(TARGET) 2>nul
+
+.PHONY: clean
