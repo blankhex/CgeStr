@@ -32,9 +32,9 @@ static int uniStreamGet(struct UniStream* stream, uint32_t* rune) {
     return 1;
 }
 
-void CgeStrIter(CgeStr str, CgeStrIterCb cb, void* user) {
-    const char* current = str.data;
-    const char* end = str.data + str.size;
+void CgeStrIter(const CgeStr* str, CgeStrIterCb cb, void* user) {
+    const char* current = str->data;
+    const char* end = str->data + str->size;
 
     while (current < end) {
         uint32_t rune;
@@ -44,9 +44,9 @@ void CgeStrIter(CgeStr str, CgeStrIterCb cb, void* user) {
     }
 }
 
-void CgeStrToLower(CgeStr str, CgeStrWriteCb cb, void* user) {
-    const char* current = str.data;
-    const char* end = str.data + str.size;
+void CgeStrToLower(const CgeStr* str, CgeStrWriteCb cb, void* user) {
+    const char* current = str->data;
+    const char* end = str->data + str->size;
 
     while (current < end) {
         uint32_t rune;
@@ -63,9 +63,9 @@ void CgeStrToLower(CgeStr str, CgeStrWriteCb cb, void* user) {
     }
 }
 
-void CgeStrToUpper(CgeStr str, CgeStrWriteCb cb, void* user) {
-    const char* current = str.data;
-    const char* end = str.data + str.size;
+void CgeStrToUpper(const CgeStr* str, CgeStrWriteCb cb, void* user) {
+    const char* current = str->data;
+    const char* end = str->data + str->size;
 
     while (current < end) {
         uint32_t rune;
@@ -82,9 +82,9 @@ void CgeStrToUpper(CgeStr str, CgeStrWriteCb cb, void* user) {
     }
 }
 
-void CgeStrFold(CgeStr str, CgeStrWriteCb cb, void* user) {
-    const char* current = str.data;
-    const char* end = str.data + str.size;
+void CgeStrFold(const CgeStr* str, CgeStrWriteCb cb, void* user) {
+    const char* current = str->data;
+    const char* end = str->data + str->size;
 
     while (current < end) {
         uint32_t rune;
@@ -101,33 +101,33 @@ void CgeStrFold(CgeStr str, CgeStrWriteCb cb, void* user) {
     }
 }
 
-int CgeStrCmp(CgeStr lhs, CgeStr rhs) {
+int CgeStrCmp(const CgeStr* lhs, const CgeStr* rhs) {
     size_t leastSize;
     int result;
 
-    leastSize = (lhs.size < rhs.size) ? lhs.size : rhs.size;
-    result = memcmp(lhs.data, rhs.data, leastSize);
+    leastSize = (lhs->size < rhs->size) ? lhs->size : rhs->size;
+    result = memcmp(lhs->data, rhs->data, leastSize);
     if (result < 0)
         return -1;
     else if (result > 0)
         return 1;
 
-    if (lhs.size < rhs.size)
+    if (lhs->size < rhs->size)
         return -1;
-    else if (lhs.size > rhs.size)
+    else if (lhs->size > rhs->size)
         return 1;
 
     return 0;
 }
 
-int CgeStrICmp(CgeStr lhs, CgeStr rhs) {
+int CgeStrICmp(const CgeStr* lhs, const CgeStr* rhs) {
     struct UniStream buf1 = {{0}, 0, 0, 0};
     struct UniStream buf2 = {{0}, 0, 0, 0};
 
-    const char* current1 = lhs.data;
-    const char* current2 = rhs.data;
-    const char* end1 = lhs.data + lhs.size;
-    const char* end2 = rhs.data + rhs.size;
+    const char* current1 = lhs->data;
+    const char* current2 = rhs->data;
+    const char* end1 = lhs->data + lhs->size;
+    const char* end2 = rhs->data + rhs->size;
 
     while (1) {
         uint32_t rune1, rune2;
@@ -168,13 +168,35 @@ int CgeStrICmp(CgeStr lhs, CgeStr rhs) {
     }
 }
 
-size_t CgeStrIndexRune(CgeStr str, uint32_t rune) {
+size_t CgeStrIndexRune(const CgeStr* str, uint32_t rune) {
+    char scratch[4];
+    CgeStr tmp;
+
+    tmp.data = scratch;
+    if ((tmp.size = CgeUtf8Encode(rune, scratch)) == -1)
+        return (size_t)-1;
+
+    return CgeStrIndexStr(str, &tmp);
+}
+
+size_t CgeStrLastIndexRune(const CgeStr* str, uint32_t rune) {
+    char scratch[4];
+    CgeStr tmp;
+
+    tmp.data = scratch;
+    if ((tmp.size = CgeUtf8Encode(rune, scratch)) == -1)
+        return (size_t)-1;
+
+    return CgeStrLastIndexStr(str, &tmp);
+}
+
+size_t CgeStrIndexRuneLax(const CgeStr* str, uint32_t rune) {
     size_t i = 0;
-    while (i < str.size) {
+    while (i < str->size) {
         uint32_t r;
         int count;
 
-        count = CgeUtf8DecodeLax(str.data + i, str.size - i, &r);
+        count = CgeUtf8DecodeLax(str->data + i, str->size - i, &r);
         if (r == rune)
             return i;
         i += count;
@@ -182,19 +204,19 @@ size_t CgeStrIndexRune(CgeStr str, uint32_t rune) {
     return (size_t)-1;
 }
 
-size_t CgeStrLastIndexRune(CgeStr str, uint32_t rune) {
-    size_t i = str.size;
+size_t CgeStrLastIndexRuneLax(const CgeStr* str, uint32_t rune) {
+    size_t i = str->size;
 
     while (i > 0) {
         size_t current = i;
         uint32_t r;
 
-        while (current > 0 && (str.data[current - 1] & 0xC0) == 0x80)
+        while (current > 0 && (str->data[current - 1] & 0xC0) == 0x80)
             current--;
         if (!current)
             current = i - 1;
 
-        CgeUtf8DecodeLax(str.data + current, i - current, &r);
+        CgeUtf8DecodeLax(str->data + current, i - current, &r);
         if (r == rune)
             return current;
         i = current;
@@ -202,106 +224,108 @@ size_t CgeStrLastIndexRune(CgeStr str, uint32_t rune) {
     return (size_t)-1;
 }
 
-size_t CgeStrIndexStr(CgeStr str, CgeStr substr) {
+size_t CgeStrIndexStr(const CgeStr* str, const CgeStr* substr) {
     size_t i;
 
-    if (!substr.size)
+    if (!substr->size)
         return 0;
-    if (str.size < substr.size)
+    if (str->size < substr->size)
         return (size_t)-1;
 
-    for (i = 0; i <= str.size - substr.size; i++) {
-        if (!memcmp(str.data + i, substr.data, substr.size))
+    for (i = 0; i <= str->size - substr->size; i++) {
+        if (!memcmp(str->data + i, substr->data, substr->size))
             return i;
     }
     return (size_t)-1;
 }
 
-size_t CgeStrLastIndexStr(CgeStr str, CgeStr substr) {
+size_t CgeStrLastIndexStr(const CgeStr* str, const CgeStr* substr) {
     size_t i;
 
-    if (!substr.size)
-        return str.size;
-    if (str.size < substr.size)
+    if (!substr->size)
+        return str->size;
+    if (str->size < substr->size)
         return (size_t)-1;
 
-    for (i = str.size - substr.size; i != (size_t)-1; i--) {
-        if (!memcmp(str.data + i, substr.data, substr.size))
+    for (i = str->size - substr->size; i != (size_t)-1; i--) {
+        if (!memcmp(str->data + i, substr->data, substr->size))
             return i;
     }
     return (size_t)-1;
 }
 
-int CgeStrHasPrefix(CgeStr str, CgeStr prefix) {
-    if (prefix.size > str.size)
+int CgeStrHasPrefix(const CgeStr* str, const CgeStr* prefix) {
+    if (prefix->size > str->size)
         return 0;
 
-    return !memcmp(str.data, prefix.data, prefix.size);
+    return !memcmp(str->data, prefix->data, prefix->size);
 }
 
-int CgeStrHasSuffix(CgeStr str, CgeStr suffix) {
-    if (suffix.size > str.size)
+int CgeStrHasSuffix(const CgeStr* str, const CgeStr* suffix) {
+    if (suffix->size > str->size)
         return 0;
 
-    return !memcmp(str.data + str.size - suffix.size, suffix.data, suffix.size);
+    return !memcmp(str->data + str->size - suffix->size, suffix->data, suffix->size);
 }
 
-CgeStr CgeStrTrimLeft(CgeStr str) {
-    while (str.size) {
+void CgeStrTrimLeft(const CgeStr* str, CgeStr* out) {
+    out->data = str->data;
+    out->size = str->size;
+
+    while (out->size) {
         uint32_t rune;
         int count;
 
-        count = CgeUtf8DecodeLax(str.data, str.size, &rune);
+        count = CgeUtf8DecodeLax(out->data, out->size, &rune);
         if (!CgeRuneIsSpace(rune))
             break;
 
-        str.data += count;
-        str.size -= count;
+        out->data += count;
+        out->size -= count;
     }
-    return str;
 }
 
-CgeStr CgeStrTrimRight(CgeStr str) {
-     while (str.size) {
-        size_t pos = str.size;
+void CgeStrTrimRight(const CgeStr* str, CgeStr* out) {
+    out->data = str->data;
+    out->size = str->size;
+
+    while (out->size) {
+        size_t pos = out->size;
         uint32_t rune;
 
-        while (pos > 0 && (str.data[pos - 1] & 0xC0) == 0x80)
+        while (pos > 0 && (out->data[pos - 1] & 0xC0) == 0x80)
             pos--;
         if (pos == 0)
             pos = 1;
 
-        CgeUtf8DecodeLax(str.data + pos - 1, str.size - (pos - 1), &rune);
+        CgeUtf8DecodeLax(out->data + pos - 1, out->size - (pos - 1), &rune);
         if (!CgeRuneIsSpace(rune))
             break;
 
-        str.size = pos - 1;
+        out->size = pos - 1;
     }
-    return str;
 }
 
-CgeStr CgeStrTrim(CgeStr str) {
-    return CgeStrTrimRight(CgeStrTrimLeft(str));
+void CgeStrTrim(const CgeStr* str, CgeStr* out) {
+    CgeStrTrimLeft(str, out);
+    CgeStrTrimRight(out, out);
 }
 
-CgeStr CgeStrSplit(CgeStr *s, uint32_t delim) {
+void CgeStrSplit(CgeStr* str, CgeStr* prefix, uint32_t delim) {
+    uint32_t r;
     size_t pos;
     int count;
-    uint32_t r;
-    CgeStr result;
 
-    pos = CgeStrIndexRune(*s, delim);
+    pos = CgeStrIndexRune(str, delim);
+    prefix->data = str->data;
+
     if (pos == (size_t)-1) {
-        result = *s;
-        s->size = 0;
-        return result;
+        prefix->size = str->size;
+        str->size = 0;
+    } else {
+        count = CgeUtf8DecodeLax(str->data + pos, str->size - pos, &r);
+        prefix->size = pos;
+        str->data += pos + count;
+        str->size -= pos + count;
     }
-
-    count = CgeUtf8DecodeLax(s->data + pos, s->size - pos, &r);
-
-    result.data = s->data;
-    result.size = pos;
-    s->data += pos + count;
-    s->size -= pos + count;
-    return result;
 }
