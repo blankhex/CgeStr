@@ -12,7 +12,7 @@ struct UniStream {
     size_t size;
 };
 
-static int uniStreamPut(struct UniStream* stream, uint32_t rune) {
+static int uniStreamPut(struct UniStream *stream, uint32_t rune) {
     if (stream->size >= MAX_UNI_STREAM)
         return 0;
 
@@ -22,7 +22,7 @@ static int uniStreamPut(struct UniStream* stream, uint32_t rune) {
     return 1;
 }
 
-static int uniStreamGet(struct UniStream* stream, uint32_t* rune) {
+static int uniStreamGet(struct UniStream *stream, uint32_t *rune) {
     if (!stream->size)
         return 0;
 
@@ -32,9 +32,9 @@ static int uniStreamGet(struct UniStream* stream, uint32_t* rune) {
     return 1;
 }
 
-void CgeStrIter(const CgeStr* str, CgeStrIterCb cb, void* user) {
-    const char* current = str->data;
-    const char* end = str->data + str->size;
+void CgeStrIter(const CgeStr *str, CgeStrIterCb cb, void *user) {
+    const char *current = str->data;
+    const char *end = str->data + str->size;
 
     while (current < end) {
         uint32_t rune;
@@ -44,9 +44,9 @@ void CgeStrIter(const CgeStr* str, CgeStrIterCb cb, void* user) {
     }
 }
 
-void CgeStrToLower(const CgeStr* str, CgeStrWriteCb cb, void* user) {
-    const char* current = str->data;
-    const char* end = str->data + str->size;
+void CgeStrToLower(const CgeStr *str, CgeStrWriteCb cb, void *user) {
+    const char *current = str->data;
+    const char *end = str->data + str->size;
 
     while (current < end) {
         uint32_t rune;
@@ -63,9 +63,9 @@ void CgeStrToLower(const CgeStr* str, CgeStrWriteCb cb, void* user) {
     }
 }
 
-void CgeStrToUpper(const CgeStr* str, CgeStrWriteCb cb, void* user) {
-    const char* current = str->data;
-    const char* end = str->data + str->size;
+void CgeStrToUpper(const CgeStr *str, CgeStrWriteCb cb, void *user) {
+    const char *current = str->data;
+    const char *end = str->data + str->size;
 
     while (current < end) {
         uint32_t rune;
@@ -82,9 +82,9 @@ void CgeStrToUpper(const CgeStr* str, CgeStrWriteCb cb, void* user) {
     }
 }
 
-void CgeStrFold(const CgeStr* str, CgeStrWriteCb cb, void* user) {
-    const char* current = str->data;
-    const char* end = str->data + str->size;
+void CgeStrFold(const CgeStr *str, CgeStrWriteCb cb, void *user) {
+    const char *current = str->data;
+    const char *end = str->data + str->size;
 
     while (current < end) {
         uint32_t rune;
@@ -101,7 +101,7 @@ void CgeStrFold(const CgeStr* str, CgeStrWriteCb cb, void* user) {
     }
 }
 
-int CgeStrCmp(const CgeStr* lhs, const CgeStr* rhs) {
+int CgeStrCmp(const CgeStr *lhs, const CgeStr *rhs) {
     size_t leastSize;
     int result;
 
@@ -120,14 +120,14 @@ int CgeStrCmp(const CgeStr* lhs, const CgeStr* rhs) {
     return 0;
 }
 
-int CgeStrICmp(const CgeStr* lhs, const CgeStr* rhs) {
+int CgeStrICmp(const CgeStr *lhs, const CgeStr *rhs) {
     struct UniStream buf1 = {{0}, 0, 0, 0};
     struct UniStream buf2 = {{0}, 0, 0, 0};
 
-    const char* current1 = lhs->data;
-    const char* current2 = rhs->data;
-    const char* end1 = lhs->data + lhs->size;
-    const char* end2 = rhs->data + rhs->size;
+    const char *current1 = lhs->data;
+    const char *current2 = rhs->data;
+    const char *end1 = lhs->data + lhs->size;
+    const char *end2 = rhs->data + rhs->size;
 
     while (1) {
         uint32_t rune1, rune2;
@@ -168,7 +168,7 @@ int CgeStrICmp(const CgeStr* lhs, const CgeStr* rhs) {
     }
 }
 
-size_t CgeStrIndexRune(const CgeStr* str, uint32_t rune) {
+size_t CgeStrIndexRune(const CgeStr *str, uint32_t rune) {
     char scratch[4];
     CgeStr tmp;
 
@@ -179,7 +179,7 @@ size_t CgeStrIndexRune(const CgeStr* str, uint32_t rune) {
     return CgeStrIndexStr(str, &tmp);
 }
 
-size_t CgeStrLastIndexRune(const CgeStr* str, uint32_t rune) {
+size_t CgeStrLastIndexRune(const CgeStr *str, uint32_t rune) {
     char scratch[4];
     CgeStr tmp;
 
@@ -190,7 +190,7 @@ size_t CgeStrLastIndexRune(const CgeStr* str, uint32_t rune) {
     return CgeStrLastIndexStr(str, &tmp);
 }
 
-size_t CgeStrIndexRuneLax(const CgeStr* str, uint32_t rune) {
+size_t CgeStrIndexRuneLax(const CgeStr *str, uint32_t rune) {
     size_t i = 0;
     while (i < str->size) {
         uint32_t r;
@@ -204,7 +204,7 @@ size_t CgeStrIndexRuneLax(const CgeStr* str, uint32_t rune) {
     return (size_t)-1;
 }
 
-size_t CgeStrLastIndexRuneLax(const CgeStr* str, uint32_t rune) {
+size_t CgeStrLastIndexRuneLax(const CgeStr *str, uint32_t rune) {
     size_t i = str->size;
 
     while (i > 0) {
@@ -224,7 +224,7 @@ size_t CgeStrLastIndexRuneLax(const CgeStr* str, uint32_t rune) {
     return (size_t)-1;
 }
 
-size_t CgeStrIndexStr(const CgeStr* str, const CgeStr* substr) {
+size_t CgeStrIndexStr(const CgeStr *str, const CgeStr *substr) {
     size_t i;
 
     if (!substr->size)
@@ -239,7 +239,7 @@ size_t CgeStrIndexStr(const CgeStr* str, const CgeStr* substr) {
     return (size_t)-1;
 }
 
-size_t CgeStrLastIndexStr(const CgeStr* str, const CgeStr* substr) {
+size_t CgeStrLastIndexStr(const CgeStr *str, const CgeStr *substr) {
     size_t i;
 
     if (!substr->size)
@@ -254,21 +254,21 @@ size_t CgeStrLastIndexStr(const CgeStr* str, const CgeStr* substr) {
     return (size_t)-1;
 }
 
-int CgeStrHasPrefix(const CgeStr* str, const CgeStr* prefix) {
+int CgeStrHasPrefix(const CgeStr *str, const CgeStr *prefix) {
     if (prefix->size > str->size)
         return 0;
 
     return !memcmp(str->data, prefix->data, prefix->size);
 }
 
-int CgeStrHasSuffix(const CgeStr* str, const CgeStr* suffix) {
+int CgeStrHasSuffix(const CgeStr *str, const CgeStr *suffix) {
     if (suffix->size > str->size)
         return 0;
 
     return !memcmp(str->data + str->size - suffix->size, suffix->data, suffix->size);
 }
 
-void CgeStrTrimLeft(const CgeStr* str, CgeStr* out) {
+void CgeStrTrimLeft(const CgeStr *str, CgeStr *out) {
     out->data = str->data;
     out->size = str->size;
 
@@ -285,7 +285,7 @@ void CgeStrTrimLeft(const CgeStr* str, CgeStr* out) {
     }
 }
 
-void CgeStrTrimRight(const CgeStr* str, CgeStr* out) {
+void CgeStrTrimRight(const CgeStr *str, CgeStr *out) {
     out->data = str->data;
     out->size = str->size;
 
@@ -306,12 +306,12 @@ void CgeStrTrimRight(const CgeStr* str, CgeStr* out) {
     }
 }
 
-void CgeStrTrim(const CgeStr* str, CgeStr* out) {
+void CgeStrTrim(const CgeStr *str, CgeStr *out) {
     CgeStrTrimLeft(str, out);
     CgeStrTrimRight(out, out);
 }
 
-void CgeStrSplit(CgeStr* str, CgeStr* prefix, uint32_t delim) {
+void CgeStrSplit(CgeStr *str, CgeStr *prefix, uint32_t delim) {
     uint32_t r;
     size_t pos;
     int count;

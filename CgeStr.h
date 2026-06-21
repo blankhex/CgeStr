@@ -4,15 +4,15 @@
 #include <stdint.h>
 
 typedef struct CgeStr {
-    const char* data;
+    const char *data;
     size_t size;
 } CgeStr;
 
 #define CGE_STR_LIT(s) \
     {(s), sizeof(s) - 1}
 
-typedef void (*CgeStrIterCb)(uint32_t rune, void* user);
-typedef void (*CgeStrWriteCb)(const char* data, size_t size, void* user);
+typedef void (*CgeStrIterCb)(uint32_t rune, void *user);
+typedef void (*CgeStrWriteCb)(const char *data, size_t size, void *user);
 
 enum CgeCat {
     CGE_CAT_LU, CGE_CAT_LL, CGE_CAT_LT, CGE_CAT_LM, CGE_CAT_LO, CGE_CAT_MN,
@@ -27,10 +27,10 @@ uint32_t CgeRuneLower(uint32_t rune);
 uint32_t CgeRuneUpper(uint32_t rune);
 uint32_t CgeRuneTitle(uint32_t rune);
 uint32_t CgeRuneFold(uint32_t rune);
-size_t CgeRuneLowerFull(uint32_t rune, uint32_t* out);
-size_t CgeRuneUpperFull(uint32_t rune, uint32_t* out);
-size_t CgeRuneTitleFull(uint32_t rune, uint32_t* out);
-size_t CgeRuneFoldFull(uint32_t rune, uint32_t* out);
+size_t CgeRuneLowerFull(uint32_t rune, uint32_t *out);
+size_t CgeRuneUpperFull(uint32_t rune, uint32_t *out);
+size_t CgeRuneTitleFull(uint32_t rune, uint32_t *out);
+size_t CgeRuneFoldFull(uint32_t rune, uint32_t *out);
 
 int CgeRuneIsControl(uint32_t rune);
 int CgeRuneIsDigit(uint32_t rune);
@@ -46,33 +46,33 @@ int CgeRuneIsSymbol(uint32_t rune);
 int CgeRuneIsTitle(uint32_t rune);
 int CgeRuneIsUpper(uint32_t rune);
 
-int CgeUtf8Encode(uint32_t rune, char* data);
-int CgeUtf8EncodeLax(uint32_t rune, char* data);
-int CgeUtf8Decode(const char* data, size_t size, uint32_t* rune);
-int CgeUtf8DecodeLax(const char* data, size_t size, uint32_t* rune);
+int CgeUtf8Encode(uint32_t rune, char *data);
+int CgeUtf8EncodeLax(uint32_t rune, char *data);
+int CgeUtf8Decode(const char *data, size_t size, uint32_t *rune);
+int CgeUtf8DecodeLax(const char *data, size_t size, uint32_t *rune);
 
-int CgeUtf16Encode(uint32_t rune, uint16_t* data);
-int CgeUtf16EncodeLax(uint32_t rune, uint16_t* data);
-int CgeUtf16Decode(const uint16_t* data, size_t size, uint32_t* rune);
-int CgeUtf16DecodeLax(const uint16_t* data, size_t size, uint32_t* rune);
+int CgeUtf16Encode(uint32_t rune, uint16_t *data);
+int CgeUtf16EncodeLax(uint32_t rune, uint16_t *data);
+int CgeUtf16Decode(const uint16_t *data, size_t size, uint32_t *rune);
+int CgeUtf16DecodeLax(const uint16_t *data, size_t size, uint32_t *rune);
 
-void CgeStrIter(const CgeStr* str, CgeStrIterCb cb, void* user);
-void CgeStrToLower(const CgeStr* str, CgeStrWriteCb cb, void* user);
-void CgeStrToUpper(const CgeStr* str, CgeStrWriteCb cb, void* user);
-void CgeStrFold(const CgeStr* str, CgeStrWriteCb cb, void* user);
-int CgeStrCmp(const CgeStr* lhs, const CgeStr* rhs);
-int CgeStrICmp(const CgeStr* lhs, const CgeStr* rhs);
-size_t CgeStrIndexRune(const CgeStr* str, uint32_t rune);
-size_t CgeStrLastIndexRune(const CgeStr* str, uint32_t rune);
-size_t CgeStrIndexRuneLax(const CgeStr* str, uint32_t rune);
-size_t CgeStrLastIndexRuneLax(const CgeStr* str, uint32_t rune);
-size_t CgeStrIndexStr(const CgeStr* str, const CgeStr* substr);
-size_t CgeStrLastIndexStr(const CgeStr* str, const CgeStr* substr);
-int CgeStrHasPrefix(const CgeStr* str, const CgeStr* prefix);
-int CgeStrHasSuffix(const CgeStr* str, const CgeStr* suffix);
-void CgeStrTrimLeft(const CgeStr* str, CgeStr* out);
-void CgeStrTrimRight(const CgeStr* str, CgeStr* out);
-void CgeStrTrim(const CgeStr* str, CgeStr* out);
-void CgeStrSplit(CgeStr* str, CgeStr* prefix, uint32_t delim);
+void CgeStrIter(const CgeStr *str, CgeStrIterCb cb, void *user);
+void CgeStrToLower(const CgeStr *str, CgeStrWriteCb cb, void *user);
+void CgeStrToUpper(const CgeStr *str, CgeStrWriteCb cb, void *user);
+void CgeStrFold(const CgeStr *str, CgeStrWriteCb cb, void *user);
+int CgeStrCmp(const CgeStr *lhs, const CgeStr *rhs);
+int CgeStrICmp(const CgeStr *lhs, const CgeStr *rhs);
+size_t CgeStrIndexRune(const CgeStr *str, uint32_t rune);
+size_t CgeStrLastIndexRune(const CgeStr *str, uint32_t rune);
+size_t CgeStrIndexRuneLax(const CgeStr *str, uint32_t rune);
+size_t CgeStrLastIndexRuneLax(const CgeStr *str, uint32_t rune);
+size_t CgeStrIndexStr(const CgeStr *str, const CgeStr *substr);
+size_t CgeStrLastIndexStr(const CgeStr *str, const CgeStr *substr);
+int CgeStrHasPrefix(const CgeStr *str, const CgeStr *prefix);
+int CgeStrHasSuffix(const CgeStr *str, const CgeStr *suffix);
+void CgeStrTrimLeft(const CgeStr *str, CgeStr *out);
+void CgeStrTrimRight(const CgeStr *str, CgeStr *out);
+void CgeStrTrim(const CgeStr *str, CgeStr *out);
+void CgeStrSplit(CgeStr *str, CgeStr *prefix, uint32_t delim);
 
 #endif /* CGE_STR_H */

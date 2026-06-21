@@ -6,14 +6,14 @@
 #include "ValueList.h"
 
 struct BlockLevel {
-    long* data;
+    long *data;
     size_t size;
     size_t capacity;
-    struct ValueList* list;
+    struct ValueList *list;
 };
 
 struct Blocks {
-    struct BlockLevel* levels;
+    struct BlockLevel *levels;
     size_t depth;
 };
 
@@ -23,8 +23,8 @@ static int ilog2(unsigned long value) {
     return result;
 }
 
-static long blockInsert(struct Blocks* blocks, long value, size_t depth) {
-    struct BlockLevel* level = blocks->levels + depth;
+static long blockInsert(struct Blocks *blocks, long value, size_t depth) {
+    struct BlockLevel *level = blocks->levels + depth;
 
     if (blocks->depth - 1 != depth) {
         if ((value = blockInsert(blocks, value, depth + 1)) == -1)
@@ -44,9 +44,9 @@ static long blockInsert(struct Blocks* blocks, long value, size_t depth) {
     return -1;
 }
 
-static long blockFindR(struct Blocks* blocks, long value, long offset, size_t depth) {
-    struct BlockLevel* level = &blocks->levels[depth];
-    struct ValueList* current;
+static long blockFindR(struct Blocks *blocks, long value, long offset, size_t depth) {
+    struct BlockLevel *level = &blocks->levels[depth];
+    struct ValueList *current;
     size_t i, bits = 0;
 
     for (i = depth + 1; i < blocks->depth; i++) {
@@ -65,7 +65,7 @@ static long blockFindR(struct Blocks* blocks, long value, long offset, size_t de
     return offset;
 }
 
-static long blockFind(struct Blocks* blocks, long value) {
+static long blockFind(struct Blocks *blocks, long value) {
     size_t i, bits = 0;
     long offset;
 
@@ -77,7 +77,7 @@ static long blockFind(struct Blocks* blocks, long value) {
     return blockFindR(blocks, value, offset, 0);
 }
 
-static void blockInit(struct Blocks* blocks, size_t depth, ...) {
+static void blockInit(struct Blocks *blocks, size_t depth, ...) {
     va_list args;
 
     blocks->depth = 0;
@@ -87,7 +87,7 @@ static void blockInit(struct Blocks* blocks, size_t depth, ...) {
     va_start(args, depth);
 
     while (blocks->depth < depth) {
-        struct BlockLevel* level = &blocks->levels[blocks->depth];
+        struct BlockLevel *level = &blocks->levels[blocks->depth];
 
         level->list = NULL;
         level->size = 0;
@@ -100,10 +100,10 @@ static void blockInit(struct Blocks* blocks, size_t depth, ...) {
     va_end(args);
 }
 
-static void blockDump(struct Blocks* blocks, size_t depth, FILE* out,
-                      const char* name, const char* type) {
-    struct BlockLevel* level = &blocks->levels[depth];
-    struct ValueList* current;
+static void blockDump(struct Blocks *blocks, size_t depth, FILE *out,
+                      const char *name, const char *type) {
+    struct BlockLevel *level = &blocks->levels[depth];
+    struct ValueList *current;
     size_t i, j, printed = 0;
 
     fprintf(out, "static const %s %s[] = {\n    ", type, name);
@@ -120,9 +120,9 @@ static void blockDump(struct Blocks* blocks, size_t depth, FILE* out,
     fprintf(out, "\n};\n\n");
 }
 
-static void blockAccess(struct Blocks* blocks, size_t depth, FILE* out,
-                        const char* var, const char* arg, const char* name) {
-    struct BlockLevel* level = &blocks->levels[depth];
+static void blockAccess(struct Blocks *blocks, size_t depth, FILE *out,
+                        const char *var, const char *arg, const char *name) {
+    struct BlockLevel *level = &blocks->levels[depth];
     long i, bits = 0, offset, mask;
 
     for (i = depth + 1; i < blocks->depth; i++) {

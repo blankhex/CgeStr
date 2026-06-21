@@ -24,18 +24,18 @@ struct CaseInfo {
         long title[4];
         long fold[4];
     } full;
-    struct CaseInfo* prev;
-    struct CaseInfo* next;
+    struct CaseInfo *prev;
+    struct CaseInfo *next;
 };
 
 typedef int (*EntryCb)(long rune, int fill, char** fields, size_t size);
 
-static void entryProcess(FILE* in, EntryCb cb, const char* globStart,
-                           const char* globEnd, size_t globField,
+static void entryProcess(FILE *in, EntryCb cb, const char *globStart,
+                           const char *globEnd, size_t globField,
                            size_t codeField, size_t minFields) {
     long code, startCode, prevCode = -1;
     char line[MAX_LINE];
-    char* fields[MAX_FIELDS];
+    char *fields[MAX_FIELDS];
     int emitted = 0;
     size_t columns;
 
@@ -76,9 +76,9 @@ static void entryProcess(FILE* in, EntryCb cb, const char* globStart,
         emitted = cb(code++, 1, fields, columns);
 }
 
-static struct CaseInfo* caseInfoSort(struct CaseInfo* head) {
-    struct CaseInfo* current;
-    struct CaseInfo* next;
+static struct CaseInfo *caseInfoSort(struct CaseInfo *head) {
+    struct CaseInfo *current;
+    struct CaseInfo *next;
     int swapped;
 
     if (!head || !head->next)
@@ -112,9 +112,9 @@ static struct CaseInfo* caseInfoSort(struct CaseInfo* head) {
     return head;
 }
 
-static struct CaseInfo* caseInfoGet(struct CaseInfo** head, long rune) {
-    struct CaseInfo* current = *head;
-    struct CaseInfo* node;
+static struct CaseInfo *caseInfoGet(struct CaseInfo** head, long rune) {
+    struct CaseInfo *current = *head;
+    struct CaseInfo *node;
 
     while (current != NULL) {
         if (current->rune == rune)
@@ -135,7 +135,7 @@ static struct CaseInfo* caseInfoGet(struct CaseInfo** head, long rune) {
     return node;
 }
 
-static size_t categoryClassify(const char* name) {
+static size_t categoryClassify(const char *name) {
     static const char *categories[] = {
         "Lu", "Ll", "Lt", "Lm", "Lo", "Mn", "Mc", "Me", "Nd", "Nl", "No", "Pc",
         "Pd", "Ps", "Pe", "Pi", "Pf", "Po", "Sm", "Sc", "Sk", "So", "Zs", "Zl",
@@ -152,15 +152,15 @@ static size_t categoryClassify(const char* name) {
     return categoryClassify("Cn");
 }
 
-FILE* in;
-FILE* out;
+FILE *in;
+FILE *out;
 
 struct Blocks categoryBlocks;
-struct CaseInfo* caseInfo = NULL;
+struct CaseInfo *caseInfo = NULL;
 
 static int entryUnicodeData(long rune, int fill, char** fields, size_t size) {
     long lowercase, uppercase, titlecase;
-    struct CaseInfo* node;
+    struct CaseInfo *node;
 
     if (fill) {
         return blockInsert(&categoryBlocks, categoryClassify("Cn"), 0);
@@ -180,8 +180,8 @@ static int entryUnicodeData(long rune, int fill, char** fields, size_t size) {
     }
 }
 
-static void arrayParseFromStr(const char* field, long* array) {
-    char* endptr = (char*)field;
+static void arrayParseFromStr(const char *field, long *array) {
+    char *endptr = (char*)field;
     size_t written = 0;
 
     while (1) {
@@ -193,7 +193,7 @@ static void arrayParseFromStr(const char* field, long* array) {
 }
 
 static int entryCaseFolding(long rune, int fill, char** fields, size_t size) {
-    struct CaseInfo* node;
+    struct CaseInfo *node;
 
     if (fill || !strcmp("T", fields[1]))
         return 1;
@@ -208,7 +208,7 @@ static int entryCaseFolding(long rune, int fill, char** fields, size_t size) {
 }
 
 static int entrySpecialCasing(long rune, int fill, char** fields, size_t size) {
-    struct CaseInfo* node;
+    struct CaseInfo *node;
 
     if (fill || strcmp("", fields[4]))
         return 1;
@@ -221,13 +221,13 @@ static int entrySpecialCasing(long rune, int fill, char** fields, size_t size) {
     return 1;
 }
 
-static void mappingRemoveSingle(long* array) {
+static void mappingRemoveSingle(long *array) {
     if (array[0] && !array[1])
         array[0] = 0;
 }
 
 static void caseInfoReduce(void) {
-    struct CaseInfo* current = caseInfo;
+    struct CaseInfo *current = caseInfo;
     while (current) {
         if (!current->simple.title && current->simple.upper)
             current->simple.title = current->simple.upper;
@@ -248,7 +248,7 @@ struct Blocks lowerFullBlocks, upperFullBlocks, titleFullBlocks, foldFullBlocks;
 long longIndexData[1024][4];
 size_t longIndexSize = 0;
 
-static long longIndexGet(long* array) {
+static long longIndexGet(long *array) {
     size_t i;
 
     for (i = 0; i < longIndexSize; i++) {
@@ -261,7 +261,7 @@ static long longIndexGet(long* array) {
 }
 
 static void blocksBuild(void) {
-    struct CaseInfo* current = caseInfo;
+    struct CaseInfo *current = caseInfo;
     int emitted;
     long last = -1;
 
@@ -388,14 +388,14 @@ static void outputCode(void) {
 } while(0)
 
 #define EMIT_FULL(FUNC, SIMPLE, FULL_BLOCKS, FULL_BASE, SIMPLE_FUNC) do { \
-    fprintf(out, "size_t CgeRune" #FUNC "Full(uint32_t r, uint32_t* out){\n"); \
+    fprintf(out, "size_t CgeRune" #FUNC "Full(uint32_t r, uint32_t *out){\n"); \
     fprintf(out, "    long t;\n    if(r>1114111ul){\n        *out=r;\n        return 1;\n    }\n"); \
     blockAccess(&FULL_BLOCKS, 0, out, "t", "r", FULL_BASE "1"); \
     blockAccess(&FULL_BLOCKS, 1, out, "t", "r", FULL_BASE "2"); \
     blockAccess(&FULL_BLOCKS, 2, out, "t", "r", FULL_BASE "3"); \
     blockAccess(&FULL_BLOCKS, 3, out, "t", "r", FULL_BASE "4"); \
     fprintf(out, "    if(t>=0){\n"); \
-    fprintf(out, "        const int32_t* p=case_data[t];\n"); \
+    fprintf(out, "        const int32_t *p=case_data[t];\n"); \
     fprintf(out, "        size_t i=0;\n"); \
     fprintf(out, "        while(p[i] && i<3){out[i]=p[i];i++;}\n"); \
     fprintf(out, "        return i;\n    }\n"); \

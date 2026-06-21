@@ -2,7 +2,7 @@
 
 #define INVALID_RUNE    0xFFFD
 
-int CgeUtf8Encode(uint32_t rune, char* data) {
+int CgeUtf8Encode(uint32_t rune, char *data) {
     if (rune < 0x80) {
         data[0] = (char)rune;
         return 1;
@@ -30,7 +30,7 @@ int CgeUtf8Encode(uint32_t rune, char* data) {
     return -1;
 }
 
-int CgeUtf8EncodeLax(uint32_t rune, char* data) {
+int CgeUtf8EncodeLax(uint32_t rune, char *data) {
     int result;
 
     result = CgeUtf8Encode(rune, data);
@@ -40,7 +40,7 @@ int CgeUtf8EncodeLax(uint32_t rune, char* data) {
     return result;
 }
 
-int CgeUtf8Decode(const char* data, size_t size, uint32_t* rune) {
+int CgeUtf8Decode(const char *data, size_t size, uint32_t *rune) {
     unsigned char byte = (unsigned char)data[0];
     int i, n;
 
@@ -88,7 +88,7 @@ int CgeUtf8Decode(const char* data, size_t size, uint32_t* rune) {
     return n;
 }
 
-int CgeUtf8DecodeLax(const char* data, size_t size, uint32_t* rune) {
+int CgeUtf8DecodeLax(const char *data, size_t size, uint32_t *rune) {
     int result;
 
     result = CgeUtf8Decode(data, size, rune);

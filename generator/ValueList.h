@@ -6,12 +6,12 @@
 #include <stdlib.h>
 
 struct ValueList {
-    long* data;
+    long *data;
     size_t size;
-    struct ValueList* next;
+    struct ValueList *next;
 };
 
-static long valueListFind(struct ValueList* list, long* data, size_t size) {
+static long valueListFind(struct ValueList *list, long *data, size_t size) {
     long index = 0;
 
     while (list) {
@@ -22,7 +22,7 @@ static long valueListFind(struct ValueList* list, long* data, size_t size) {
     return -1;
 }
 
-static long valueListIntern(struct ValueList** list, long* data, size_t size) {
+static long valueListIntern(struct ValueList** list, long *data, size_t size) {
     long index = 0;
 
     while (*list) ++index, list = &(*list)->next;

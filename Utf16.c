@@ -2,7 +2,7 @@
 
 #define INVALID_RUNE    0xFFFD
 
-int CgeUtf16Encode(uint32_t rune, uint16_t* data) {
+int CgeUtf16Encode(uint32_t rune, uint16_t *data) {
     if (rune <= 0xFFFF) {
         if (rune >= 0xD800 && rune <= 0xDFFF)
             return -1;
@@ -18,7 +18,7 @@ int CgeUtf16Encode(uint32_t rune, uint16_t* data) {
     return -1;
 }
 
-int CgeUtf16EncodeLax(uint32_t rune, uint16_t* data) {
+int CgeUtf16EncodeLax(uint32_t rune, uint16_t *data) {
     int result;
 
     result = CgeUtf16Encode(rune, data);
@@ -28,7 +28,7 @@ int CgeUtf16EncodeLax(uint32_t rune, uint16_t* data) {
     return result;
 }
 
-int CgeUtf16Decode(const uint16_t* data, size_t size, uint32_t* rune) {
+int CgeUtf16Decode(const uint16_t *data, size_t size, uint32_t *rune) {
     uint16_t trail, lead = data[0];
 
     if (size == 0)
@@ -51,7 +51,7 @@ int CgeUtf16Decode(const uint16_t* data, size_t size, uint32_t* rune) {
     return -1;
 }
 
-int CgeUtf16DecodeLax(const uint16_t* data, size_t size, uint32_t* rune) {
+int CgeUtf16DecodeLax(const uint16_t *data, size_t size, uint32_t *rune) {
     int result;
 
     result = CgeUtf16Decode(data, size, rune);

@@ -33,7 +33,7 @@ Builds a static library. No shared library or external dependencies.
 #include "CgeStr.h"
 #include <stdio.h>
 
-void print_rune(uint32_t rune, void* user) {
+void print_rune(uint32_t rune, void *user) {
     printf("U+%04X ", rune);
 }
 
