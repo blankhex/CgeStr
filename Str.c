@@ -173,7 +173,7 @@ size_t CgeStrIndexRune(const CgeStr *str, uint32_t rune) {
     CgeStr tmp;
 
     tmp.data = scratch;
-    if ((tmp.size = CgeUtf8Encode(rune, scratch)) == -1)
+    if ((tmp.size = CgeUtf8Encode(rune, scratch)) == (size_t)-1)
         return (size_t)-1;
 
     return CgeStrIndexStr(str, &tmp);
@@ -184,7 +184,7 @@ size_t CgeStrLastIndexRune(const CgeStr *str, uint32_t rune) {
     CgeStr tmp;
 
     tmp.data = scratch;
-    if ((tmp.size = CgeUtf8Encode(rune, scratch)) == -1)
+    if ((tmp.size = CgeUtf8Encode(rune, scratch)) == (size_t)-1)
         return (size_t)-1;
 
     return CgeStrLastIndexStr(str, &tmp);
