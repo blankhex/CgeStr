@@ -1,6 +1,7 @@
 #ifndef CGE_STR_H
 #define CGE_STR_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 typedef struct CgeStr {
