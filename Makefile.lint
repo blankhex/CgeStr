@@ -1,0 +1,29 @@
+# Makefile.lint - Individual linting targets
+
+.PHONY: all
+all: cppcheck clang-tidy scan-build security-check
+	@echo "All linting scheduled"
+
+.PHONY: cppcheck
+cppcheck:
+	@echo "Running cppcheck..."
+	@cppcheck --enable=warning,performance,portability --std=c99 --quiet -Iinclude -I. .
+
+.PHONY: clang-tidy
+clang-tidy:
+	@echo "Running clang-tidy..."
+	@for file in $$(find . -name "*.c" -type f); do \
+		clang-tidy "$$file" -- -I. -Iinclude -std=c99; \
+	done
+
+.PHONY: scan-build
+scan-build:
+	@echo "Running scan-build..."
+	@scan-build --status-bugs make -f Makefile.posix clean all CC=clang
+
+.PHONY: security-check
+security-check:
+	@echo "Scanning for unsafe C functions..."
+	@grep -rnE '\b(strcpy|strcat|sprintf|gets|scanf|sscanf|realpath|mktemp|tempnam|tmpnam|getwd|getlogin)\b' \
+		. --include="*.c" --include="*.h" | grep -v "^Binary file" && \
+		exit 1 || exit 0

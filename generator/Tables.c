@@ -123,7 +123,7 @@ static struct CaseInfo *caseInfoGet(struct CaseInfo** head, long rune) {
     }
 
     if (!(node = malloc(sizeof(*node))))
-        return NULL;
+        abort();
 
     memset(node, 0, sizeof(*node));
     node->rune = rune;
@@ -262,7 +262,7 @@ static long longIndexGet(long *array) {
 
 static void blocksBuild(void) {
     struct CaseInfo *current = caseInfo;
-    int emitted;
+    int emitted = -1;
     long last = -1;
 
     blockInit(&lowerBlocks, 4, 1, 64, 16, 1);
@@ -352,6 +352,7 @@ static void outputCode(void) {
     blockDump(&BLOCK, 3, out, NAME "4", TYPE4)
 
     fprintf(out, "/* Auto-generated case mapping tables */\n\n");
+    fprintf(out, "#include <stddef.h>\n");
     fprintf(out, "#include <stdint.h>\n\n");
 
     DUMP("cat", categoryBlocks, "uint8_t", "uint16_t", "uint16_t", "uint8_t");
@@ -397,7 +398,7 @@ static void outputCode(void) {
     fprintf(out, "    if(t>=0){\n"); \
     fprintf(out, "        const int32_t *p=case_data[t];\n"); \
     fprintf(out, "        size_t i=0;\n"); \
-    fprintf(out, "        while(p[i] && i<3){out[i]=p[i];i++;}\n"); \
+    fprintf(out, "        while(i<3 && p[i]){out[i]=p[i];i++;}\n"); \
     fprintf(out, "        return i;\n    }\n"); \
     fprintf(out, "    *out=CgeRune" #SIMPLE "(r);\n    return 1;\n}\n\n"); \
 } while(0)
@@ -426,7 +427,8 @@ static void outputCode(void) {
 #undef EMIT_FULL
 
 int main() {
-    if (!(in = fopen("UnicodeData.txt", "r"))) {
+    in = fopen("UnicodeData.txt", "r");
+    if (!in) {
         fprintf(stderr, "UnicodeData.txt not found. Download it from:\n");
         fprintf(stderr, "https://www.unicode.org/Public/UCD/latest/ucd/UnicodeData.txt\n");
         return -1;
@@ -438,7 +440,8 @@ int main() {
     entryProcess(in, entryUnicodeData, "<*, First>", "<*, Last>", 1, 0, 15);
     fclose(in);
 
-    if (!(in = fopen("CaseFolding.txt", "r"))) {
+    in = fopen("CaseFolding.txt", "r");
+    if (!in) {
         fprintf(stderr, "CaseFolding.txt not found. Download it from:\n");
         fprintf(stderr, "https://www.unicode.org/Public/UCD/latest/ucd/CaseFolding.txt\n");
         return -1;
@@ -448,7 +451,8 @@ int main() {
     fclose(in);
 
     fprintf(stderr, "Processing SpecialCasing.txt\n");
-    if (!(in = fopen("SpecialCasing.txt", "r"))) {
+    in = fopen("SpecialCasing.txt", "r");
+    if (!in) {
         fprintf(stderr, "SpecialCasing.txt not found. Download it from:\n");
         fprintf(stderr, "https://www.unicode.org/Public/UCD/latest/ucd/SpecialCasing.txt\n");
         return -1;

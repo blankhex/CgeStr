@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [trunk]
+  pull_request:
+    branches: [trunk]
+
+jobs:
+  build-and-analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y build-essential clang clang-tools clang-tidy cppcheck
+
+      - name: Build with GCC
+        run: |
+          make -f Makefile.posix clean
+          make -f Makefile.posix CC=gcc CFLAGS="-std=c99 -Wall -Wextra -Wpedantic -Werror -O2"
+
+      - name: Build with Clang
+        run: |
+          make -f Makefile.posix clean
+          make -f Makefile.posix CC=clang CFLAGS="-std=c99 -Wall -Wextra -Wpedantic -Werror -O2"
+
+      - name: Linting checks
+        run: |
+          echo "Running all linting checks..."
+          FAILED=0
+
+          # cppcheck
+          echo "=== Check 1/4: cppcheck ==="
+          if make -f Makefile.lint cppcheck; then
+            echo "cppcheck: PASSED"
+          else
+            echo "cppcheck: FAILED"
+            FAILED=1
+          fi
+
+          # clang-tidy
+          echo "=== Check 2/4: clang-tidy ==="
+          if make -f Makefile.lint clang-tidy; then
+            echo "clang-tidy: PASSED"
+          else
+            echo "clang-tidy: FAILED"
+            FAILED=1
+          fi
+
+          # scan-build
+          echo "=== Check 3/4: scan-build ==="
+          if make -f Makefile.lint scan-build; then
+            echo "scan-build: PASSED"
+          else
+            echo "scan-build: FAILED"
+            FAILED=1
+          fi
+
+          # security-check
+          echo "=== Check 4/4: security-check ==="
+          if make -f Makefile.lint security-check; then
+            echo "security-check: PASSED"
+          else
+            echo "security-check: FAILED"
+            FAILED=1
+          fi
+
+          # Final result
+          if [ $FAILED -ne 0 ]; then
+            echo "One or more linting checks failed."
+            exit 1
+          else
+            echo "All linting checks passed."
+          fi
