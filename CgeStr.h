@@ -1,6 +1,10 @@
 #ifndef CGE_STR_H
 #define CGE_STR_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -75,5 +79,9 @@ void CgeStrTrimLeft(const CgeStr *str, CgeStr *out);
 void CgeStrTrimRight(const CgeStr *str, CgeStr *out);
 void CgeStrTrim(const CgeStr *str, CgeStr *out);
 void CgeStrSplit(CgeStr *str, CgeStr *prefix, uint32_t delim);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CGE_STR_H */
